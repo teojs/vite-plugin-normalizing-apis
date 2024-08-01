@@ -1,6 +1,7 @@
 {
   "name": "@teojs/vite-plugin-normalizing-apis",
-  "version": "0.0.5",
+  "version": "0.0.6",
+  "private": false,
   "description": "normalizing axios api",
   "author": "teojs <cheesen.xu@gmail.com>",
   "license": "MIT",
