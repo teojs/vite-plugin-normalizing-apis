@@ -39,5 +39,10 @@
     "jsonc",
     "yaml",
     "toml"
+  ],
+  "cSpell.words": [
+    "antfu",
+    "bumpp",
+    "tsup"
   ]
 }
