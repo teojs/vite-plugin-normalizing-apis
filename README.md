@@ -1,2 +1,1 @@
-# vite-plugin-normalizing-apis
-normalizing axios api
+# @teojs/vite-plugin-normalizing-apis

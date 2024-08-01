@@ -1,0 +1,58 @@
+{
+  "name": "@teojs/vite-plugin-normalizing-apis",
+  "version": "0.0.2",
+  "description": "normalizing axios api",
+  "author": "teojs <cheesen.xu@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/teojs/vite-plugin-axios",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/teojs/vite-plugin-axios"
+  },
+  "bugs": "https://github.com/teojs/vite-plugin-axios",
+  "keywords": [
+    "axios",
+    "api"
+  ],
+  "exports": {
+    "./client": {
+      "types": "./client.d.ts"
+    },
+    "./*": "./*",
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "files": [
+    "client.d.ts",
+    "dist"
+  ],
+  "scripts": {
+    "dev": "npm run build -- --watch",
+    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "prepublishOnly": "npm run build",
+    "release": "npx bumpp --commit --tag --push && npm publish"
+  },
+  "peerDependencies": {
+    "vite": "^4.0.0 || ^5.0.0"
+  },
+  "dependencies": {
+    "debug": "^4.3.4",
+    "fast-glob": "^3.3.2"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^2.3.4",
+    "@types/debug": "^4.1.12",
+    "@types/node": "^20.10.3",
+    "eslint": "^8.49.0",
+    "eslint-plugin-format": "^0.1.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.2",
+    "vite": "^5.0.5"
+  }
+}
