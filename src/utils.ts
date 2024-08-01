@@ -75,10 +75,10 @@ export function toCamelCase(input: string): string {
     .map((word, index) => {
       if (index === 0) {
         // 第一个词全小写
-        return word.toLowerCase()
+        return word
       }
       // 其他词首字母大写
-      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+      return word.charAt(0).toUpperCase() + word.slice(1)
     })
     .join('')
 }
