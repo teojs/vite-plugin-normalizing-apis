@@ -1,13 +1,13 @@
 {
   "name": "@teojs/vite-plugin-normalizing-apis",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "normalizing axios api",
   "author": "teojs <cheesen.xu@gmail.com>",
   "license": "MIT",
   "homepage": "https://github.com/teojs/vite-plugin-normalizing-apis",
   "repository": {
     "type": "git",
-    "url": "https://github.com/teojs/vite-plugin-normalizing-apis"
+    "url": "git+https://github.com/teojs/vite-plugin-normalizing-apis.git"
   },
   "bugs": "https://github.com/teojs/vite-plugin-normalizing-apis/issues",
   "keywords": [
