@@ -10,7 +10,7 @@ import generatedTemplate from './generated-template'
 const virtualModuleId = 'virtual:normalizing-apis'
 const resolvedVirtualModuleId = `\0${virtualModuleId}`
 
-export default function normalizingApis(userOptions: UserOptions = {}): Plugin {
+export default function normalizingApis (userOptions: UserOptions = {}): Plugin {
   let config: ResolvedConfig
 
   const options: ResolvedOptions = {
@@ -27,11 +27,14 @@ export default function normalizingApis(userOptions: UserOptions = {}): Plugin {
   return {
     name: 'vite-plugin-axios',
     enforce: 'pre',
-    configResolved(_config) {
+    configResolved (_config) {
       config = _config
       apisDirs = resolveDirs(options.apisDirs, config.root)
     },
-    configureServer({ watcher }) {
+    buildStart() {
+      generatedTypes(options, apisDirs)
+    },
+    configureServer ({ watcher }) {
       watcher.add(options.apisDirs)
 
       generatedTypes(options, apisDirs)
@@ -55,12 +58,12 @@ export default function normalizingApis(userOptions: UserOptions = {}): Plugin {
         }
       })
     },
-    resolveId(id) {
+    resolveId (id) {
       if (id === virtualModuleId) {
         return resolvedVirtualModuleId
       }
     },
-    async load(id) {
+    async load (id) {
       if (id === resolvedVirtualModuleId) {
         const importCode = generatedImport(options, apisDirs, config.root)
 
