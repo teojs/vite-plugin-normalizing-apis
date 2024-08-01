@@ -1,6 +1,6 @@
 {
   "name": "@teojs/vite-plugin-normalizing-apis",
-  "version": "0.0.7",
+  "version": "0.1.1",
   "private": false,
   "description": "normalizing axios api",
   "author": "teojs <cheesen.xu@gmail.com>",
@@ -15,9 +15,6 @@
     "axios",
     "api"
   ],
-  "publishConfig": {
-    "access": "public"
-  },
   "exports": {
     "./client": {
       "types": "./client.d.ts"
@@ -40,7 +37,7 @@
     "dev": "npm run build -- --watch",
     "build": "tsup src/index.ts --dts --format cjs,esm",
     "prepublishOnly": "npm run build",
-    "release": "npx bumpp --commit --tag --push && npm publish"
+    "release": "npx bumpp --commit --tag --push && npm publish --access public"
   },
   "peerDependencies": {
     "vite": "^4.0.0 || ^5.0.0"
