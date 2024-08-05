@@ -70,16 +70,17 @@ export default function api(ctx: IRequestConfig): Promise<IResponseData> {
 <script setup lang="ts">
 import { apis } from '@service'
 
-function login(){
-  apis.comm.login({
-    data:{
-      username: ''
-      password: ''
-    }
-  }).then(e => {
-    /// ...
-  })
+function login() {
+  apis.comm
+    .login({
+      data: {
+        username: '',
+        password: '',
+      },
+    })
+    .then((e) => {
+      /// ...
+    })
 }
-
 </script>
 ```
