@@ -1,14 +1,16 @@
 # @teojs/vite-plugin-normalizing-apis
 
-## How to use
+将每个接口分为单个文件存放，此插件会自动生成types文件，和虚拟模块供一次性引用，无需再手动去写配置和单个引入。
 
-### Install
+## 如何使用
+
+### 安装
 
 ```bash
 pnpm add @teojs/vite-plugin-normalizing-apis -D
 ```
 
-### Configure
+### 配置
 ```ts
 // vite.config.ts
 import generatedApis from '@teojs/vite-plugin-normalizing-apis'
@@ -17,7 +19,7 @@ export default defineConfig({
   plugins: [
     generatedApis({
       apisDirs: 'src/service/apis',
-      dts: 'src/service/types/api.d.ts',
+      dts: 'src/service/types.d.ts',
       tpl: 'src/service/tpl.ts',
     }),
   ],
@@ -84,3 +86,20 @@ function login() {
 }
 </script>
 ```
+
+## 例子
+
+```bash
+git clone https://github.com/teojs/vite-plugin-normalizing-apis.git
+cd vite-plugin-normalizing-apis
+pnpm i
+pnpm dev:demo
+```
+
+## 参数
+
+| 字段            | 描述 |
+| --------------- | ---------------- |
+| apisDirs          | 存放接口的目录     |
+| dts            |  声明文件输出路径       |
+| tpl    |  模板文件路径，将在开发模式下自动为每个新的空ts文件填充模板    |
