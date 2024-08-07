@@ -1,4 +1,4 @@
-name: Publish to npm
+name: Publish pnpm package
 
 on:
   push:
@@ -11,17 +11,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
-      - name: Set up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '18'
-      - name: Active pnpm
-        run: corepack enable pnpm
+          registry-url: 'https://registry.npmjs.org'
+      - name: Install pnpm
+        run: npm install -g pnpm
       - name: Install dependencies
-        run: pnpm i
-      - name: Build project
-        run: pnpm run build
-      - name: Publish to npm
-        run: npm publish
+        run: pnpm install
+      # - name: Run tests
+      #   run: pnpm test
+      - name: Publish package
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm release
