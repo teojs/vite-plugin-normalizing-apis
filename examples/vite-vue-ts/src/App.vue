@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import HelloWorld from './components/HelloWorld.vue'
-import { apis } from '@/service';
+import { Apis, apis } from '@/service';
 
 const msg = ref('')
 const getDemo = () => {
@@ -14,7 +14,19 @@ const getDemo = () => {
   })
 }
 
+const userInfo = ref<Apis.user.list.UserInfo[]>([])
+function getUserList() {
+  apis.user.list({
+    params: {
+      test: 'test'
+    }
+  }).then(res => {
+    userInfo.value = res.body
+  })
+}
+
 getDemo()
+getUserList()
 </script>
 
 <template>
