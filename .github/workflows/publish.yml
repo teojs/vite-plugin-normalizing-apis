@@ -1,9 +1,9 @@
 name: Publish pnpm package
 
 on:
-  push:
-    branches:
-      - main
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   publish:

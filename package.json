@@ -36,7 +36,7 @@
     "dev": "tsup --watch",
     "build": "tsup",
     "prepublishOnly": "npm run build",
-    "release": "npx bumpp --all && npm publish --access public && git push --tags",
+    "release": "npx bumpp --all && npm publish --access public",
     "dev:demo": "pnpm -F vite-vue-ts dev"
   },
   "peerDependencies": {
@@ -50,6 +50,7 @@
     "@antfu/eslint-config": "^2.3.4",
     "@types/debug": "^4.1.12",
     "@types/node": "^20.10.3",
+    "conventional-github-releaser": "^3.1.5",
     "eslint": "^8.49.0",
     "eslint-plugin-format": "^0.1.0",
     "tsup": "^8.0.1",
