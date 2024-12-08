@@ -148,3 +148,34 @@ export async function getFilesFromPath(
     return []
   }
 }
+
+interface DirStructure {
+  [x: string]: string | DirStructure
+}
+
+/**
+ * 格式化接口结构
+ * @param structure 目录结构对象
+ * @param indent 缩进空格数
+ * @returns 格式化后的接口字符串
+ */
+export function formatInterface(structure: DirStructure, indent = 2): string {
+  const spaces = ' '.repeat(indent)
+  const entries = Object.entries(structure)
+
+  if (entries.length === 0)
+    return '{}'
+
+  const lines = entries.map(([key, value]) => {
+    if (typeof value === 'string') {
+      // 处理函数类型
+      return `${spaces}${JSON.stringify(key)}: ${value.replace(/==/g, '')}`
+    }
+    else {
+      // 处理嵌套对象
+      return `${spaces}${JSON.stringify(key)}: ${formatInterface(value, indent + 2)}`
+    }
+  })
+
+  return `{\n${lines.join(',\n')}\n${' '.repeat(indent - 2)}}`
+}

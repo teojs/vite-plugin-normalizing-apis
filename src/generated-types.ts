@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import { parse, posix } from 'node:path'
 import {
+  formatInterface,
   getFilesFromPath,
   pathToKey,
   set,
@@ -38,6 +39,7 @@ export default async function generatedTypes(
       .split('/')
       .filter(Boolean)
       .concat(parseFile.name)
+      .map(toCamelCase)
       .join('.')
 
     // 为每个API文件生成对应的命名空间声明
@@ -54,16 +56,15 @@ export default async function generatedTypes(
 ${apiImport.join('\n')}
 
 declare module 'virtual:normalizing-apis' {
-  // API函数接口
-  interface Apis ${JSON.stringify(dirStructure, null, 2)}
+  interface Apis ${formatInterface(dirStructure)}
+  
   export const apis: Apis
 
-  // 导出全局Apis命名空间
   export namespace Apis {
     ${namespaceContent.join('\n')}
   }
 }
-`.replace(/=="|"==/g, '')
+`
 
   fs.writeFileSync(posix.join(options.dts), apisTypesContent)
 }
