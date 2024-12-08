@@ -39,61 +39,57 @@ export default function normalizingApis(userOptions: UserOptions = {}): Plugin<A
       apisDirs = resolveDirs(options.apisDirs, config.root)
     },
 
-    buildStart() {
-      generatedTypes(options, apisDirs)
-    },
-
     configureServer(server) {
-      if (!server.config.isProduction) {
-        generatedTypes(options, apisDirs)
+      const watcher = server.watcher.add(apisDirs)
+      watcher.on('all', async (event, path) => {
+        if (!path?.startsWith(apisDirs))
+          return
 
-        const watcher = server.watcher.add(apisDirs)
-        watcher.on('all', async (event, path) => {
-          if (!path?.startsWith(apisDirs))
-            return
+        try {
+          if (event === 'add') {
+            await generatedTemplate(options, path, config.root)
 
-          try {
-            if (event === 'add') {
-              await generatedTemplate(options, path, config.root)
-
-              await generatedTypes(options, apisDirs)
-
-              server.ws.send({
-                type: 'update',
-                updates: [{
-                  type: 'js-update',
-                  path: clientPathId,
-                  acceptedPath: clientPathId,
-                  timestamp: Date.now(),
-                }],
-              })
-
-              return
-            }
-
-            if (event === 'unlink') {
-              await generatedTypes(options, apisDirs)
-            }
-
-            const virtualModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
-            if (virtualModule) {
-              server.moduleGraph.invalidateModule(virtualModule)
-            }
-          }
-          catch (error) {
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-            const errorStack = error instanceof Error ? error.stack || 'No stack available' : 'No stack available'
+            await generatedTypes(options, apisDirs)
 
             server.ws.send({
-              type: 'error',
-              err: {
-                message: `Failed to process ${event} event for ${path}: ${errorMessage}`,
-                stack: errorStack,
-              },
+              type: 'update',
+              updates: [{
+                type: 'js-update',
+                path: clientPathId,
+                acceptedPath: clientPathId,
+                timestamp: Date.now(),
+              }],
             })
+
+            return
           }
-        })
-      }
+
+          if (event === 'unlink') {
+            await generatedTypes(options, apisDirs)
+          }
+
+          const virtualModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
+          if (virtualModule) {
+            server.moduleGraph.invalidateModule(virtualModule)
+          }
+        }
+        catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+          const errorStack = error instanceof Error ? error.stack || 'No stack available' : 'No stack available'
+
+          server.ws.send({
+            type: 'error',
+            err: {
+              message: `Failed to process ${event} event for ${path}: ${errorMessage}`,
+              stack: errorStack,
+            },
+          })
+        }
+      })
+    },
+
+    buildStart() {
+      generatedTypes(options, apisDirs)
     },
 
     resolveId(id) {
