@@ -18,7 +18,12 @@ const userInfo = ref<Apis.user.list.UserInfo[]>([])
 function getUserList() {
   apis.user.list({
     params: {
-      test: 'test'
+      id: 1,
+      name: 'test'
+    },
+    data: {
+      id: 1,
+      name: 'test'
     }
   }).then(res => {
     userInfo.value = res.body

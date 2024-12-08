@@ -3,13 +3,19 @@ import http from '@/service/axios.config'
 
 interface IRequestConfig extends AxiosRequestConfig {
   params: {
-    test: string
+    id: number
+    name: string
+  }
+  data: {
+    id: number
+    name: string
   }
 }
 
 export interface UserInfo {
   id: number
-  name: string
+  name?: string
+  age?: number
 }
 
 interface IResponseData {

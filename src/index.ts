@@ -2,13 +2,13 @@ import { resolve } from 'node:path'
 import type { Plugin, ResolvedConfig } from 'vite'
 import { resolveDirs } from './utils'
 import generatedTypes from './generated-types'
-import generatedImport from './generated-import'
-
+import generatedCode from './generated-code'
 import type { ResolvedOptions, UserOptions } from './types'
 import generatedTemplate from './generated-template'
 
 const virtualModuleId = 'virtual:normalizing-apis'
 const resolvedVirtualModuleId = `\0${virtualModuleId}`
+const clientPathId = `/@id/__x00__${virtualModuleId}`
 
 interface Api {
   get options (): ResolvedOptions
@@ -33,47 +33,84 @@ export default function normalizingApis(userOptions: UserOptions = {}): Plugin<A
   return {
     name: 'vite-plugin-axios',
     enforce: 'pre',
+
     configResolved(_config) {
       config = _config
       apisDirs = resolveDirs(options.apisDirs, config.root)
     },
+
     buildStart() {
       generatedTypes(options, apisDirs)
     },
-    configureServer({ watcher }) {
-      watcher.add(options.apisDirs)
 
-      generatedTypes(options, apisDirs)
+    configureServer(server) {
+      if (!server.config.isProduction) {
+        generatedTypes(options, apisDirs)
 
-      watcher.on('add', (path) => {
-        if (path.startsWith(apisDirs)) {
-          generatedTypes(options, apisDirs)
-          generatedTemplate(options, path, config.root)
-        }
-      })
+        const watcher = server.watcher.add(apisDirs)
+        watcher.on('all', async (event, path) => {
+          if (!path?.startsWith(apisDirs))
+            return
 
-      watcher.on('unlink', (path) => {
-        if (path.startsWith(apisDirs)) {
-          generatedTypes(options, apisDirs)
-        }
-      })
+          try {
+            if (event === 'add') {
+              await generatedTemplate(options, path, config.root)
 
-      watcher.on('change', async (path) => {
-        if (path.startsWith(apisDirs)) {
-          generatedTypes(options, apisDirs)
-        }
-      })
+              await generatedTypes(options, apisDirs)
+
+              server.ws.send({
+                type: 'update',
+                updates: [{
+                  type: 'js-update',
+                  path: clientPathId,
+                  acceptedPath: clientPathId,
+                  timestamp: Date.now(),
+                }],
+              })
+
+              return
+            }
+
+            if (event === 'unlink') {
+              await generatedTypes(options, apisDirs)
+            }
+
+            const virtualModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
+            if (virtualModule) {
+              server.moduleGraph.invalidateModule(virtualModule)
+            }
+          }
+          catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+            const errorStack = error instanceof Error ? error.stack || 'No stack available' : 'No stack available'
+
+            server.ws.send({
+              type: 'error',
+              err: {
+                message: `Failed to process ${event} event for ${path}: ${errorMessage}`,
+                stack: errorStack,
+              },
+            })
+          }
+        })
+      }
     },
+
     resolveId(id) {
       if (id === virtualModuleId) {
         return resolvedVirtualModuleId
       }
     },
+
     async load(id) {
       if (id === resolvedVirtualModuleId) {
-        const importCode = generatedImport(options, apisDirs, config.root)
-
-        return importCode
+        const importCode = await generatedCode(options, apisDirs, config.root)
+        return `
+          ${importCode}
+          if (import.meta.hot) {
+            import.meta.hot.accept()
+          }
+        `
       }
     },
   }

@@ -7,7 +7,9 @@ import { isEmptyFile, isExistsFile } from './utils'
  * 自动写入模板
  *
  * @export
+ * @param {ResolvedOptions} options
  * @param {string} targetPath
+ * @param {string} root
  */
 export default async function generatedTemplate(
   options: ResolvedOptions,
