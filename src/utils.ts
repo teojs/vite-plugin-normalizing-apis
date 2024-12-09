@@ -1,8 +1,8 @@
-import { resolve } from 'node:path'
+import type { ResolvedOptions } from './types'
 import fs from 'node:fs'
+import { resolve } from 'node:path'
 import Debug from 'debug'
 import fg from 'fast-glob'
-import type { ResolvedOptions } from './types'
 
 export const debug = Debug('vite-plugin-layouts')
 

@@ -1,10 +1,10 @@
-import { resolve } from 'node:path'
 import type { Plugin, ResolvedConfig } from 'vite'
-import { resolveDirs } from './utils'
-import generatedTypes from './generated-types'
-import generatedCode from './generated-code'
 import type { ResolvedOptions, UserOptions } from './types'
+import { resolve } from 'node:path'
+import generatedCode from './generated-code'
 import generatedTemplate from './generated-template'
+import generatedTypes from './generated-types'
+import { resolveDirs } from './utils'
 
 const virtualModuleId = 'virtual:normalizing-apis'
 const resolvedVirtualModuleId = `\0${virtualModuleId}`

@@ -1,6 +1,6 @@
+import type { ResolvedOptions } from './types'
 import fs from 'node:fs'
 import { extname, posix } from 'node:path'
-import type { ResolvedOptions } from './types'
 import { isEmptyFile, isExistsFile } from './utils'
 
 /**

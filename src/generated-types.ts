@@ -1,3 +1,4 @@
+import type { ResolvedOptions } from './types'
 import fs from 'node:fs'
 import { parse, posix } from 'node:path'
 import {
@@ -7,7 +8,6 @@ import {
   set,
   toCamelCase,
 } from './utils'
-import type { ResolvedOptions } from './types'
 
 interface DirStructure {
   [x: string]: string | DirStructure
@@ -21,6 +21,7 @@ export default async function generatedTypes(
   const dirStructure: DirStructure = {}
   const apiImport: string[] = []
   const namespaceContent: string[] = []
+  const typeImport: string[] = []
 
   files.forEach((file) => {
     const parseFile = parse(file)
@@ -30,6 +31,7 @@ export default async function generatedTypes(
 
     // 构建API函数类型结构
     set(dirStructure, keyName, `==typeof ${importName}==`)
+    typeImport.push(`export type * from '${importPath}'`)
 
     // 导入API模块
     apiImport.push(`import type ${importName} from '${importPath}'`)
@@ -59,6 +61,8 @@ declare module 'virtual:normalizing-apis' {
   interface Apis ${formatInterface(dirStructure)}
   
   export const apis: Apis
+
+  ${typeImport.join('\n')}
 
   export namespace Apis {
     ${namespaceContent.join('\n')}

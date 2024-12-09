@@ -17,6 +17,10 @@ declare module 'virtual:normalizing-apis' {
   
   export const apis: Apis
 
+  export type * from 'src/service/apis/demo.ts'
+export type * from 'src/service/apis/user/get-user-name.ts'
+export type * from 'src/service/apis/user/list.ts'
+
   export namespace Apis {
     
     export namespace demo {

@@ -8,5 +8,7 @@ export default defineConfig((options) => {
     minify: !options.watch,
     clean: true,
     dts: true,
+    external: ['jiti'],
+    // legacyOutput: true,
   }
 })

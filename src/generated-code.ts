@@ -1,3 +1,4 @@
+import type { ResolvedOptions } from './types'
 import fs from 'node:fs'
 import { parse, posix } from 'node:path'
 import {
@@ -6,7 +7,6 @@ import {
   set,
   toCamelCase,
 } from './utils'
-import type { ResolvedOptions } from './types'
 
 interface DirStructure {
   [x: string]: string | DirStructure
