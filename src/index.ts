@@ -1,6 +1,7 @@
-import type { Plugin, ResolvedConfig } from 'vite'
+import type { FSWatcher } from 'chokidar'
+import type { Plugin, ResolvedConfig, ViteDevServer } from 'vite'
 import type { ResolvedOptions, UserOptions } from './types'
-import { resolve } from 'node:path'
+import chokidar from 'chokidar'
 import generatedCode from './generated-code'
 import generatedTemplate from './generated-template'
 import generatedTypes from './generated-types'
@@ -18,6 +19,7 @@ interface Api {
 
 export default function normalizingApis(userOptions: UserOptions = {}): Plugin<Api> {
   let config: ResolvedConfig
+  let apisDirs: string
 
   const options: ResolvedOptions = {
     apisDirs: 'src/service/apis',
@@ -28,55 +30,48 @@ export default function normalizingApis(userOptions: UserOptions = {}): Plugin<A
     ...userOptions,
   }
 
-  let apisDirs: string
+  async function handleWatch(dir: string, server?: ViteDevServer) {
+    const watcher = chokidar.watch(dir, {
+      ignoreInitial: true,
+      persistent: true,
+    })
 
-  return {
-    name: 'vite-plugin-axios',
-    enforce: 'pre',
+    watcher.on('all', async (event, path) => {
+      try {
+        if (event === 'add' && typeof path === 'string') {
+          await generatedTemplate(options, path, config.root)
 
-    configResolved(_config) {
-      config = _config
-      apisDirs = resolveDirs(options.apisDirs, config.root)
-    },
+          await generatedTypes(options, dir)
 
-    configureServer(server) {
-      const watcher = server.watcher.add(apisDirs)
-      watcher.on('all', async (event, path) => {
-        if (!path?.startsWith(apisDirs))
+          server?.ws.send({
+            type: 'update',
+            updates: [{
+              type: 'js-update',
+              path: clientPathId,
+              acceptedPath: clientPathId,
+              timestamp: Date.now(),
+            }],
+          })
+
           return
+        }
 
-        try {
-          if (event === 'add') {
-            await generatedTemplate(options, path, config.root)
+        if (event === 'unlink') {
+          await generatedTypes(options, dir)
+        }
 
-            await generatedTypes(options, apisDirs)
-
-            server.ws.send({
-              type: 'update',
-              updates: [{
-                type: 'js-update',
-                path: clientPathId,
-                acceptedPath: clientPathId,
-                timestamp: Date.now(),
-              }],
-            })
-
-            return
-          }
-
-          if (event === 'unlink') {
-            await generatedTypes(options, apisDirs)
-          }
-
-          const virtualModule = server.moduleGraph.getModuleById(resolvedVirtualModuleId)
+        if (server) {
+          const virtualModule = server?.moduleGraph.getModuleById(resolvedVirtualModuleId)
           if (virtualModule) {
-            server.moduleGraph.invalidateModule(virtualModule)
+            server?.moduleGraph.invalidateModule(virtualModule)
           }
         }
-        catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-          const errorStack = error instanceof Error ? error.stack || 'No stack available' : 'No stack available'
+      }
+      catch (error) {
+        const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+        const errorStack = error instanceof Error ? error.stack || 'No stack available' : 'No stack available'
 
+        if (server) {
           server.ws.send({
             type: 'error',
             err: {
@@ -85,7 +80,28 @@ export default function normalizingApis(userOptions: UserOptions = {}): Plugin<A
             },
           })
         }
-      })
+      }
+    })
+  }
+
+  return {
+    name: 'vite-plugin-axios',
+    enforce: 'pre',
+
+    configResolved(_config) {
+      config = _config
+      apisDirs = resolveDirs(options.apisDirs, config.root)
+
+      if (config.build.watch && config.command === 'build') {
+        handleWatch(apisDirs)
+      }
+    },
+
+    /**
+     * @see https://cn.vite.dev/guide/api-plugin#configureserver
+     */
+    configureServer(server) {
+      handleWatch(apisDirs, server)
     },
 
     buildStart() {
