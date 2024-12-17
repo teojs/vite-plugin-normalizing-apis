@@ -50,6 +50,7 @@
     "@antfu/eslint-config": "^3.11.2",
     "@types/debug": "^4.1.12",
     "@types/node": "^20.10.3",
+    "chokidar": "^4.0.2",
     "conventional-github-releaser": "^3.1.5",
     "eslint": "^9.16.0",
     "tsup": "^8.0.1",
