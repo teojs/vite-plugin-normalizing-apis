@@ -31,7 +31,7 @@ export default async function generatedTypes(
 
     // 构建API函数类型结构
     set(dirStructure, keyName, `==typeof ${importName}==`)
-    typeImport.push(`export type * from '${importPath}'`)
+    typeImport.push(`export * from '${importPath}'`)
 
     // 导入API模块
     apiImport.push(`import type ${importName} from '${importPath}'`)
