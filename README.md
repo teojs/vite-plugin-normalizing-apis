@@ -29,8 +29,8 @@ pnpm add @teojs/vite-plugin-normalizing-apis -D
 
 ```ts
 // vite.config.ts
-import { defineConfig } from 'vite'
 import generatedApis from '@teojs/vite-plugin-normalizing-apis'
+import { defineConfig } from 'vite'
 
 export default defineConfig({
   plugins: [
