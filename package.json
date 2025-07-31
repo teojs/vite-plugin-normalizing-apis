@@ -1,6 +1,6 @@
 {
   "name": "@teojs/vite-plugin-normalizing-apis",
-  "version": "1.1.5",
+  "version": "1.1.6",
   "description": "normalizing axios api",
   "author": "teojs <cheesen.xu@gmail.com>",
   "license": "MIT",
@@ -40,7 +40,7 @@
     "dev:demo": "pnpm -F vite-vue-ts dev"
   },
   "peerDependencies": {
-    "vite": "^4.0.0 || ^5.0.0"
+    "vite": "^4.0.0 || ^5.0.0 || ^6.0.0 || ^7.0.0"
   },
   "dependencies": {
     "debug": "^4.3.4",
